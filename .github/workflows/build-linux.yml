@@ -1,0 +1,28 @@
+# .github/workflows/build-linux.yml
+# Last modified: 03-Feb-2024 (kobayasy)
+
+name: Linux
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and install
+      run: |
+        mkdir build
+        cd build
+        ../src/configure --prefix=$HOME --enable-warnall
+        make install distclean
+        cd ..
+        rmdir build
+    - name: Run
+      run: |
+        ~/bin/syncTimeICOM --help

@@ -1,0 +1,42 @@
+# .github/workflows/release.yml
+# Last modified: 03-Feb-2024 (kobayasy)
+
+name: Release
+
+on:
+  push:
+    tags:
+    - "[0-9]*"
+
+jobs:
+  dist:
+    name: Dist
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Release
+      id: release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: syncTimeICOM ${{ github.ref }}
+    - name: Setenv
+      id: env
+      run: |
+        echo "dist=syncTimeICOM-`basename '${{ github.ref }}'`" >> $GITHUB_OUTPUT
+    - name: Preparate
+      run: |
+        ln -s src ${{ steps.env.outputs.dist }}
+        tar chzf ${{ steps.env.outputs.dist }}.tar.gz ${{ steps.env.outputs.dist }}
+    - name: Upload
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: ${{ steps.env.outputs.dist }}.tar.gz
+        asset_name: ${{ steps.env.outputs.dist }}.tar.gz
+        asset_content_type: application/gzip
