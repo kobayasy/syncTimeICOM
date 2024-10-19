@@ -1,4 +1,4 @@
-# configure.ac - Last modified: 03-Feb-2024 (kobayasy)
+# configure.ac - Last modified: 19-Oct-2024 (kobayasy)
 #
 # Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
 #
@@ -23,7 +23,7 @@
 # SOFTWARE.
 
 AC_PREREQ(2.72)
-AC_INIT([syncTimeICOM], [1.0], [kobayasy@kobayasy.com], [syncTimeICOM])
+AC_INIT([syncTimeICOM], [1.1], [kobayasy@kobayasy.com], [syncTimeICOM])
 AC_COPYRIGHT([Copyright @{:@C@:}@ 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>])
 AC_CONFIG_SRCDIR([syncTimeICOM.c])
 AC_CONFIG_AUX_DIR([conf])
@@ -63,7 +63,7 @@ AC_CHECK_HEADERS([termcap.h],
 AC_SYS_POSIX_TERMIOS
 AS_VAR_IF([ac_cv_sys_posix_termios], [no],
    [AC_MSG_ERROR([missing function: POSIX termios.])] )
-MY_ARG_WITH([catdev], [DEVICE], [device filename for CAT @{:@default=/dev/cu.usbserial-110@:}@])
+MY_ARG_WITH([catdev], [DEVICE], [device filename for CAT @{:@default=/dev/cu.usbserial-1110@:}@])
 AS_VAR_SET_IF([withval],
    [AC_DEFINE_UNQUOTED([CATDEV], ["$withval"], [Deveice filename for CAT.])] )
 MY_ARG_ENABLE([tzlocal], [enable], [adjust to local time])

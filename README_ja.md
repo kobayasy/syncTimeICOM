@@ -25,7 +25,7 @@ POSIX準拠のOSならば動作すると思いますが、動作確認が出来�
 |---|---|---|---|
 |IC-705|?|?|-|
 |IC-7100|?|?|-|
-|IC-7300|macOS Sonoma 14.2.1|Yes|/dev/cu.usbserial-110|
+|IC-7300|macOS Sonoma 14.2.1|Yes|/dev/cu.usbserial-1110|
 |↑|Linux ?|?|-|
 |IC-7600|?|?|-|
 |IC-7610|?|?|-|
@@ -35,9 +35,9 @@ POSIX準拠のOSならば動作すると思いますが、動作確認が出来�
 ## インストール
 1. 下記コマンドでビルドとインストールを実行します。
 ```
-curl -LOJs https://github.com/kobayasy/syncTimeICOM/releases/download/1.0/syncTimeICOM-1.0.tar.gz
-tar xzf syncTimeICOM-1.0.tar.gz
-cd syncTimeICOM-1.0
+curl -LOJs https://github.com/kobayasy/syncTimeICOM/releases/download/1.1/syncTimeICOM-1.1.tar.gz
+tar xzf syncTimeICOM-1.1.tar.gz
+cd syncTimeICOM-1.1
 ./configure --prefix=$HOME
 make install
 
@@ -55,12 +55,12 @@ syncTimeICOM --help
 実行例↓
 ```
 $ syncTimeICOM --help
-syncTimeICOM 1.0
+syncTimeICOM 1.1
 
 Usage: syncTimeICOM [-u|-l] [--utc|--local] [CATDEV]
        syncTimeICOM --help
 
-CATDEV         device filename for CAT (default: /dev/cu.usbserial-110)
+CATDEV         device filename for CAT (default: /dev/cu.usbserial-1110)
 
 runmode
   -u, --utc    adjust to UTC (default)
@@ -73,10 +73,10 @@ $
 ```
 
 2. 無線機をPCに繋いで、電源を切った状態で下記コマンドを実行して下さい。
-/dev/cu.usbserial-110 部分はPCが認識した無線機の CAT デバイスファイル名に置き換えて下さい。
+/dev/cu.usbserial-1110 部分はPCが認識した無線機の CAT デバイスファイル名に置き換えて下さい。
 
 ```
-syncTimeICOM --utc /dev/cu.usbserial-110
+syncTimeICOM --utc /dev/cu.usbserial-1110
 ```
 無線機の電源が入る
 →
@@ -89,7 +89,7 @@ syncTimeICOM --utc /dev/cu.usbserial-110
 
 実行例↓
 ```
-$ syncTimeICOM --utc /dev/cu.usbserial-110
+$ syncTimeICOM --utc /dev/cu.usbserial-1110
 Power on
 [ Waiting for  0 seconds until exactly 09:18 UTC ]
 Adjusted to 09:18 UTC
@@ -113,7 +113,7 @@ configure のオプションは下記コマンドで表示されます。
 実行例↓
 ```
 $ ./configure --help
-'configure' configures syncTimeICOM 1.0 to adapt to many kinds of systems.
+'configure' configures syncTimeICOM 1.1 to adapt to many kinds of systems.
 
 Usage: ./configure [OPTION]... [VAR=VALUE]...
 
@@ -183,7 +183,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-catdev=DEVICE    device filename for CAT
-                          (default=/dev/cu.usbserial-110)
+                          (default=/dev/cu.usbserial-1110)
   --with-timeout=MSEC     timeout in msec for CAT
 
 Some influential environment variables:

@@ -1,4 +1,4 @@
-/* syncTimeICOM.c - Last modified: 03-Feb-2024 (kobayasy)
+/* syncTimeICOM.c - Last modified: 19-Oct-2024 (kobayasy)
  *
  * Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -47,7 +47,7 @@
 #define PACKAGE_TARNAME "syncTImeICOM"
 #endif  /* #ifndef PACKAGE_TARNAME */
 #ifndef CATDEV
-#define CATDEV "/dev/cu.usbserial-110"
+#define CATDEV "/dev/cu.usbserial-1110"
 #endif  /* #ifndef CATDEV */
 #ifndef TZLOCAL
 #define TZLOCAL false
