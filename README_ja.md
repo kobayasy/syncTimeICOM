@@ -25,7 +25,8 @@ POSIX準拠のOSならば動作すると思いますが、動作確認が出来�
 |---|---|---|---|
 |IC-705|?|?|-|
 |IC-7100|?|?|-|
-|IC-7300|macOS Sonoma 14.2.1|Yes|/dev/cu.usbserial-1110|
+|IC-7300|macOS Sonoma 14.2.1|Yes|/dev/cu.usbserial-110|
+|↑|macOS Sequoia 15.0.1|Yes|/dev/cu.usbserial-1110|
 |↑|Linux ?|?|-|
 |IC-7600|?|?|-|
 |IC-7610|?|?|-|
