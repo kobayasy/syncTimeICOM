@@ -27,6 +27,7 @@ POSIX準拠のOSならば動作すると思いますが、動作確認が出来�
 |IC-7100|?|?|-|
 |IC-7300|macOS Sonoma 14.2.1|Yes|/dev/cu.usbserial-110|
 |↑|macOS Sequoia 15.0.1|Yes|/dev/cu.usbserial-1110|
+|↑|macOS Sequoia 15.4.1|Yes|/dev/cu.usbserial-110|
 |↑|Linux ?|?|-|
 |IC-7600|?|?|-|
 |IC-7610|?|?|-|
@@ -36,9 +37,9 @@ POSIX準拠のOSならば動作すると思いますが、動作確認が出来�
 ## インストール
 1. 下記コマンドでビルドとインストールを実行します。
 ```
-curl -LOJs https://github.com/kobayasy/syncTimeICOM/releases/download/1.1/syncTimeICOM-1.1.tar.gz
-tar xzf syncTimeICOM-1.1.tar.gz
-cd syncTimeICOM-1.1
+curl -LOJs https://github.com/kobayasy/syncTimeICOM/releases/download/1.2/syncTimeICOM-1.2.tar.gz
+tar xzf syncTimeICOM-1.2.tar.gz
+cd syncTimeICOM-1.2
 ./configure --prefix=$HOME
 make install
 
@@ -56,7 +57,7 @@ syncTimeICOM --help
 実行例↓
 ```
 $ syncTimeICOM --help
-syncTimeICOM 1.1
+syncTimeICOM 1.2
 
 Usage: syncTimeICOM [-u|-l] [--utc|--local] [CATDEV]
        syncTimeICOM --help
@@ -114,7 +115,7 @@ configure のオプションは下記コマンドで表示されます。
 実行例↓
 ```
 $ ./configure --help
-'configure' configures syncTimeICOM 1.1 to adapt to many kinds of systems.
+'configure' configures syncTimeICOM 1.2 to adapt to many kinds of systems.
 
 Usage: ./configure [OPTION]... [VAR=VALUE]...
 

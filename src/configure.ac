@@ -1,4 +1,4 @@
-# configure.ac - Last modified: 19-Oct-2024 (kobayasy)
+# configure.ac - Last modified: 04-May-2025 (kobayasy)
 #
 # Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
 #
@@ -23,7 +23,7 @@
 # SOFTWARE.
 
 AC_PREREQ(2.72)
-AC_INIT([syncTimeICOM], [1.1], [kobayasy@kobayasy.com], [syncTimeICOM])
+AC_INIT([syncTimeICOM], [1.2], [kobayasy@kobayasy.com], [syncTimeICOM])
 AC_COPYRIGHT([Copyright @{:@C@:}@ 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>])
 AC_CONFIG_SRCDIR([syncTimeICOM.c])
 AC_CONFIG_AUX_DIR([conf])
