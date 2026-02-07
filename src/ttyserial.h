@@ -1,6 +1,6 @@
-/* ttyserial.h - Last modified: 02-Feb-2024 (kobayasy)
+/* ttyserial.h - Last modified: 07-Feb-2026 (kobayasy)
  *
- * Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
+ * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation files

@@ -1,6 +1,6 @@
-# configure.ac - Last modified: 04-May-2025 (kobayasy)
+# configure.ac - Last modified: 07-Feb-2026 (kobayasy)
 #
-# Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
+# Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -22,9 +22,9 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+AC_INIT([syncTimeICOM], [1.3], [kobayasy@kobayasy.com], [syncTimeICOM])
+AC_COPYRIGHT([Copyright @{:@C@:}@ 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>])
 AC_PREREQ(2.72)
-AC_INIT([syncTimeICOM], [1.2], [kobayasy@kobayasy.com], [syncTimeICOM])
-AC_COPYRIGHT([Copyright @{:@C@:}@ 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>])
 AC_CONFIG_SRCDIR([syncTimeICOM.c])
 AC_CONFIG_AUX_DIR([conf])
 
@@ -57,13 +57,13 @@ AC_CHECK_FUNC([clock_gettime],
    [AC_CHECK_LIB([rt], [clock_gettime])] )
 AC_CHECK_HEADERS([termcap.h],
    [AC_CHECK_FUNC([tgetent],
-       [AC_DEFINE([HAVE_TGETENT], [1], [Define to 1 if you have the `tgetent' function.])],
+       [AC_DEFINE([HAVE_TGETENT], [1], [Define to 1 if you have the 'tgetent' function.])],
        [AC_SEARCH_LIBS([tgetent], [tinfo ncurses],
            [AC_DEFINE([HAVE_TGETENT], [1])] )] )] )
 AC_SYS_POSIX_TERMIOS
 AS_VAR_IF([ac_cv_sys_posix_termios], [no],
    [AC_MSG_ERROR([missing function: POSIX termios.])] )
-MY_ARG_WITH([catdev], [DEVICE], [device filename for CAT @{:@default=/dev/cu.usbserial-1110@:}@])
+MY_ARG_WITH([catdev], [DEVICE], [device filename for CAT @{:@default=/dev/cu.usbserial-110@:}@])
 AS_VAR_SET_IF([withval],
    [AC_DEFINE_UNQUOTED([CATDEV], ["$withval"], [Deveice filename for CAT.])] )
 MY_ARG_ENABLE([tzlocal], [enable], [adjust to local time])

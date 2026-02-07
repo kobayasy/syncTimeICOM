@@ -1,6 +1,6 @@
-/* syncTimeICOM.c - Last modified: 04-May-2025 (kobayasy)
+/* syncTimeICOM.c - Last modified: 07-Feb-2026 (kobayasy)
  *
- * Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
+ * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation files
@@ -27,10 +27,11 @@
 #include <config.h>
 #endif  /* #ifdef HAVE_CONFIG_H */
 
+#include <limits.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
@@ -41,10 +42,10 @@
 #include "tpbar.h"
 
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "syncTImeICOM"
+#define PACKAGE_STRING "syncTimeICOM"
 #endif  /* #ifndef PACKAGE_STRING */
 #ifndef PACKAGE_TARNAME
-#define PACKAGE_TARNAME "syncTImeICOM"
+#define PACKAGE_TARNAME "syncTimeICOM"
 #endif  /* #ifndef PACKAGE_TARNAME */
 #ifndef CATDEV
 #define CATDEV "/dev/cu.usbserial-110"
@@ -190,38 +191,41 @@ typedef struct {
     int status;
 } INFO_PARAM;
 static void *info_thread(void *data) {
+    int status = INT_MIN;
     INFO_PARAM *param = data;
     struct tm *(*time_r)(const time_t *clock, struct tm *result);
-    struct timespec tsnow, tslast;
+    STR ftime;
+    char str1[1024];
     struct tm tm;
-    char text[1024];
-    char buffer[1024], *s;
+    struct timespec tsnow, tslast;
+    STR text, line;
+    char str2[1024], str3[1024];
 
     time_r = param->tzlocal ? localtime_r : gmtime_r;
+    STR_INIT(ftime, str1);
+    ONERR(str_catt(&ftime, "[ Waiting for %%2ld seconds until exactly %H:%M %Z ]",
+                   time_r(&param->ts.tv_sec, &tm) ), -1);
     if (clock_gettime(CLOCK_REALTIME, &tsnow) == -1) {
-        param->status = -1;
+        status = -1;
         goto error;
     }
     tslast = tsnow;
     while (tsdiff(&param->ts, &tsnow) > 0) {
         if (usleep(250000) == -1 ||
-            clock_gettime(CLOCK_REALTIME, &tsnow) == -1 ||
-            time_r(&param->ts.tv_sec, &tm) == NULL ) {
-            param->status = -1;
+            clock_gettime(CLOCK_REALTIME, &tsnow) == -1 ) {
+            status = -1;
             goto error;
         }
-        sprintf(text, "[ Waiting for %2ld seconds until exactly %02d:%02d %s ]",
-                tsdiff(&param->ts, &tsnow) / 1000000, tm.tm_hour, tm.tm_min, tm.tm_zone );
-        s = buffer;
-        s += tpbar_setrow(s, param->row, &param->tpbar);
-        s += tpbar_printf(s, tsdiff(&tsnow, &tslast), tsdiff(&param->ts, &tslast), &param->tpbar, text);
-        if (write(STDOUT_FILENO, buffer, s - buffer) == -1) {
-            param->status = -1;
-            goto error;
-        }
+        STR_INIT(text, str2);
+        STR_INIT(line, str3);
+        if (!ISERR(str_catf(&text, ftime.s, tsdiff(&param->ts, &tsnow) / 1000000)) &&
+            !ISERR(tpbar_setrow(&line, param->row, &param->tpbar)) &&
+            !ISERR(tpbar_printf(&line, tsdiff(&tsnow, &tslast), tsdiff(&param->ts, &tslast), &param->tpbar, text.s)) )
+            write(STDOUT_FILENO, line.s, str_len(&line));
     }
-    param->status = 0;
+    status = 0;
 error:
+    param->status = status;
     return NULL;
 }
 
@@ -244,24 +248,28 @@ static int run(OPT *opt) {
     int status = INT_MIN;
     int fd = -1;
     TTYSerial tty;
+    bool ttyserial = false;
+    struct tm *(*time_r)(const time_t *clock, struct tm *result);
     INFO_PARAM info_param = {
         .tzlocal = opt->tzlocal,
         .status = INT_MIN
     };
-    struct tm *(*time_r)(const time_t *clock, struct tm *result);
     int row;
-    char buffer[1024], *s;
+    STR line;
+    char str[1024];
     pthread_t tid;
     bool info;
     struct timespec ts;
     struct tm tm;
 
-    fd = open(opt->catdev, O_RDWR);
+    fd = open(opt->catdev, O_RDWR|O_NOCTTY);
     if (fd == -1) {
         status = -1;
         goto error;
     }
-    ONERR(ttyserial_new(&tty, fd), -1);
+    ttyserial = !ISERR(ttyserial_new(&tty, fd));
+    if (!ttyserial)
+        goto error;
     time_r = info_param.tzlocal ? localtime_r : gmtime_r;
     if (clock_gettime(CLOCK_REALTIME, &info_param.ts) == -1) {
         status = -1;
@@ -270,11 +278,11 @@ static int run(OPT *opt) {
     info_param.ts.tv_sec += 10, next0sec(&info_param.ts);
     tpbar_init(&info_param.tpbar);
     row = tpbar_getrow(0, &info_param.tpbar);
-    powerICOM(&tty, true);
-    s = buffer;
-    s += tpbar_setrow(s, row++, &info_param.tpbar);
-    s += sprintf(s, "Power on");
-    write(STDOUT_FILENO, buffer, s - buffer);
+    STR_INIT(line, str);
+    if (!ISERR(powerICOM(&tty, true)) &&
+        !ISERR(tpbar_setrow(&line, row++, &info_param.tpbar)) &&
+        !ISERR(str_cats(&line, "Power on", NULL)) )
+        write(STDOUT_FILENO, line.s, str_len(&line));
     info_param.row = row++;
     info = pthread_create(&tid, NULL, info_thread, &info_param) == 0;
     if (clock_gettime(CLOCK_REALTIME, &ts) == -1 ||
@@ -283,29 +291,27 @@ static int run(OPT *opt) {
         goto error;
     }
     status = syncTimeICOM(&tty, &info_param.ts, info_param.tzlocal);
-    if (time_r(&info_param.ts.tv_sec, &tm) == NULL) {
-        status = -1;
-        goto error;
-    }
-    s = buffer;
-    s += tpbar_setrow(s, row++, &info_param.tpbar);
-    s += sprintf(s, "Adjusted to %02d:%02d %s", tm.tm_hour, tm.tm_min, tm.tm_zone);
-    write(STDOUT_FILENO, buffer, s - buffer);
-    powerICOM(&tty, false);
-    s = buffer;
-    s += tpbar_setrow(s, row++, &info_param.tpbar);
-    s += sprintf(s, "Power off");
-    write(STDOUT_FILENO, buffer, s - buffer);
-    ttyserial_free(&tty);
     if (info) {
         pthread_join(tid, NULL);
         ONERR(info_param.status, -1);
     }
-    s = buffer;
-    s += tpbar_setrow(s, INT_MAX, &info_param.tpbar);
-    write(STDOUT_FILENO, buffer, s - buffer);
+    STR_INIT(line, str);
+    if (!ISERR(status) &&
+        !ISERR(tpbar_setrow(&line, row++, &info_param.tpbar)) &&
+        !ISERR(str_catt(&line, "Adjusted to %H:%M %Z", time_r(&info_param.ts.tv_sec, &tm))) )
+        write(STDOUT_FILENO, line.s, str_len(&line));
+    STR_INIT(line, str);
+    if (!ISERR(powerICOM(&tty, false)) &&
+        !ISERR(tpbar_setrow(&line, row++, &info_param.tpbar)) &&
+        !ISERR(str_cats(&line, "Power off", NULL)) )
+        write(STDOUT_FILENO, line.s, str_len(&line));
+    STR_INIT(line, str);
+    if (!ISERR(tpbar_setrow(&line, INT_MAX, &info_param.tpbar)))
+        write(STDOUT_FILENO, line.s, str_len(&line));
     status = 0;
 error:
+    if (ttyserial)
+        ttyserial_free(&tty);
     if (fd != -1)
         close(fd);
     return status;

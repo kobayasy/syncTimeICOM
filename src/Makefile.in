@@ -1,7 +1,7 @@
 # @configure_input@
-# Makefile.in - Last modified: 03-Feb-2024 (kobayasy)
+# Makefile.in - Last modified: 07-Feb-2026 (kobayasy)
 #
-# Copyright (c) 2023 by Yuichi Kobayashi <kobayasy@kobayasy.com>
+# Copyright (c) 2023-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -48,8 +48,8 @@ all : $(TARGET)
 
 syncTimeICOM.@OBJEXT@ : syncTimeICOM.c common.h ttyserial.h tpbar.h config.h
 common.@OBJEXT@ : common.c common.h config.h
-ttyserial.@OBJEXT@ : ttyserial.c ttyserial.h
-tpbar.@OBJEXT@ : tpbar.c tpbar.h config.h
+ttyserial.@OBJEXT@ : ttyserial.c ttyserial.h config.h
+tpbar.@OBJEXT@ : tpbar.c tpbar.h common.h config.h
 
 $(TARGET) : $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -65,9 +65,11 @@ distclean : clean
 	$(RM) config.log config.status config.cache
 	$(RM) Makefile config.h
 
-install : $(TARGET)
-	test -d $(DESTDIR)$(bindir) || $(INSTALL) -m755 -d $(DESTDIR)$(bindir)
-	$(INSTALL) -m755 -s $^ $(DESTDIR)$(bindir)
+install : $(TARGET) $(DESTDIR)$(bindir)
+	$(INSTALL) -m755 -s $^
 
 uninstall :
 	$(RM) $(addprefix $(DESTDIR)$(bindir)/,$(notdir $(TARGET)))
+
+$(DESTDIR)$(bindir) :
+	$(INSTALL) -m755 -d $@

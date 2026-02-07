@@ -1,6 +1,6 @@
-/* ttyserial.c - Last modified: 02-Feb-2024 (kobayasy)
+/* ttyserial.c - Last modified: 07-Feb-2026 (kobayasy)
  *
- * Copyright (C) 2024 by Yuichi Kobayashi <kobayasy@kobayasy.com>
+ * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation files
@@ -22,6 +22,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif  /* #ifdef HAVE_CONFIG_H */
 
 #include <termios.h>
 #include "ttyserial.h"
@@ -63,10 +67,12 @@ int ttyserial_new(TTYSerial *tty, int fd) {
 /* 受信動作 */
     attr.c_cflag |=  CREAD;  /* 有効 */
 //    attr.c_cflag &= ~CREAD;  /* 無効 */
-    if (cfsetospeed(&attr, speed) == -1)
+    if (cfsetispeed(&attr, speed) == -1 ||
+        cfsetospeed(&attr, speed) == -1 ||
+        tcsetattr(tty->fd, TCSAFLUSH, &attr) == -1 ) {
+        tcsetattr(tty->fd, TCSANOW, &tty->attr);
         goto error;
-    if (tcsetattr(tty->fd, TCSAFLUSH, &attr) == -1)
-        goto error;
+    }
     status = 0;
  error:
     return status;
