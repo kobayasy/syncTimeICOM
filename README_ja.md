@@ -1,5 +1,5 @@
 <!--
-README_ja.md - Last modified: 05-Feb-2026 (kobayasy)
+README_ja.md - Last modified: 07-Feb-2026 (kobayasy)
 -->
 
 [
@@ -69,7 +69,7 @@ $
 `/dev/cu.usbserial-110` 部分はPCが認識した無線機の CAT デバイスファイル名に置き換えて下さい。
 
 ```sh
-syncTimeICOM --utc /dev/cu.usbserial-1110
+syncTimeICOM --utc /dev/cu.usbserial-110
 ```
 無線機の電源が入る
 →
@@ -82,7 +82,7 @@ syncTimeICOM --utc /dev/cu.usbserial-1110
 
 実行例↓
 ```
-$ syncTimeICOM --utc /dev/cu.usbserial-1110
+$ syncTimeICOM --utc /dev/cu.usbserial-110
 Power on
 [ Waiting for  0 seconds until exactly 09:18 UTC ]
 Adjusted to 09:18 UTC
