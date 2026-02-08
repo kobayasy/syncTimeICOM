@@ -1,5 +1,5 @@
 <!--
-README_ja.md - Last modified: 07-Feb-2026 (kobayasy)
+README_ja.md - Last modified: 08-Feb-2026 (kobayasy)
 -->
 
 [
@@ -11,7 +11,7 @@ README_ja.md - Last modified: 07-Feb-2026 (kobayasy)
 
 [![macOS](https://github.com/kobayasy/syncTimeICOM/workflows/macOS/badge.svg)](https://github.com/kobayasy/syncTimeICOM/actions/workflows/build-macos.yml)
 [![Linux](https://github.com/kobayasy/syncTimeICOM/workflows/Linux/badge.svg)](https://github.com/kobayasy/syncTimeICOM/actions/workflows/build-linux.yml)
-/
+<sup>|</sup>
 [![SAST](https://github.com/kobayasy/syncTimeICOM/workflows/SAST/badge.svg)](https://github.com/kobayasy/syncTimeICOM/actions/workflows/codeql-analysis.yml)
 
 オープンソースのICOM社製無線機の時刻設定コマンドです。
