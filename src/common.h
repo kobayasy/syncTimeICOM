@@ -1,4 +1,4 @@
-/* common.h - Last modified: 07-Feb-2026 (kobayasy)
+/* common.h - Last modified: 07-Mar-2026 (kobayasy)
  *
  * Copyright (C) 2018-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -34,7 +34,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include <sys/types.h>
+#include <unistd.h>
 
 #define ISERR(_status) ((_status) < 0)
 #define ONERR(_status, _error) \
@@ -44,7 +44,7 @@
             goto error; \
         } \
     } while (0)
-#define ISSTOP(_stop) ((_stop) != NULL && *(_stop))
+#define ISSTOP(_stop) ((_stop) && *(_stop))
 #define ONSTOP(_stop, _error) \
     do { \
         if (ISSTOP(_stop)) { \

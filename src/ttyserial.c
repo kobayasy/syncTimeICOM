@@ -1,4 +1,4 @@
-/* ttyserial.c - Last modified: 07-Feb-2026 (kobayasy)
+/* ttyserial.c - Last modified: 28-Mar-2026 (kobayasy)
  *
  * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -41,10 +41,10 @@ int ttyserial_new(TTYSerial *tty, int fd) {
     tty->attr = attr;
     cfmakeraw(&attr);
 /* ボーレイト設定 */
-//    speed = B115200;  /* 115200bps */
+    speed = B115200;  /* 115200bps */
 //    speed =  B38400;  /*  38400bps */
 //    speed =  B19200;  /*  19200bps */
-    speed =   B9600;  /*   9600bps */
+//    speed =   B9600;  /*   9600bps */
 //    speed =   B2400;  /*   2400bps */
 /* データビット幅 */
     attr.c_cflag &= ~CSIZE, attr.c_cflag |=  CS8;  /* 8bit */
@@ -78,17 +78,6 @@ int ttyserial_new(TTYSerial *tty, int fd) {
     return status;
 }
 
-int ttyserial_flush(TTYSerial *tty) {
-    int status = -1;
-
-    if (tcdrain(tty->fd) != 0)
-        goto error;
-    status = 0;
-error:
-    return status;
-}
-
 void ttyserial_free(TTYSerial *tty) {
-    ttyserial_flush(tty);
-    tcsetattr(tty->fd, TCSANOW, &tty->attr);
+    tcsetattr(tty->fd, TCSAFLUSH, &tty->attr);
 }

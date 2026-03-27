@@ -1,4 +1,4 @@
-/* syncTimeICOM.c - Last modified: 07-Feb-2026 (kobayasy)
+/* syncTimeICOM.c - Last modified: 28-Mar-2026 (kobayasy)
  *
  * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -101,7 +101,7 @@ static int syncTimeICOM(TTYSerial *tty, const struct timespec *ts, bool tzlocal)
     uint8_t buffer[sizeof(GetR)];
 
     time_r = tzlocal ? localtime_r : gmtime_r;
-    if (time_r(&ts->tv_sec, &tm) == NULL) {
+    if (!time_r(&ts->tv_sec, &tm)) {
         status = -1;
         goto error;
     }
@@ -147,30 +147,16 @@ static int powerICOM(TTYSerial *tty, bool power) {
     uint8_t pwrOnOff[] = {
         0xfe, 0xfe, 0x94, 0xe0, 0x18, 0x00, 0xfd
     };
-    signed long t;
-    struct timespec tslast, tsnow;
+    unsigned int n;
     uint8_t buffer[sizeof(GetR)];
 
-    if (power)
-        pwrOnOff[ 5] = 0x01, t = 1300;
-    else
-        pwrOnOff[ 5] = 0x00, t =    0;
-    if (t > 0) {
-        if (clock_gettime(CLOCK_REALTIME, &tslast) == -1) {
-            status = -1;
-            goto error;
-        }
-        do {
+    if (power) {
+        pwrOnOff[5] = 0x01;
+        for (n = 0; n < 150; ++n)  /* 115200bps */
             if (write_size(tty->fd, pwrOnOff, 1) != 1) {
                 status = -1;
                 goto error;
             }
-            ONERR(ttyserial_flush(tty), -1);
-            if (clock_gettime(CLOCK_REALTIME, &tsnow) == -1) {
-                status = -1;
-                goto error;
-            }
-        } while (tsdiff(&tsnow, &tslast) < t);
     }
     if (write_size(tty->fd, pwrOnOff, sizeof(pwrOnOff)) != sizeof(pwrOnOff) ||
         read_size(tty->fd, buffer, sizeof(GetR)) != sizeof(GetR) ||
@@ -198,12 +184,12 @@ static void *info_thread(void *data) {
     char str1[1024];
     struct tm tm;
     struct timespec tsnow, tslast;
-    STR text, line;
-    char str2[1024], str3[1024];
+    STR line;
+    char str2[1024];
 
     time_r = param->tzlocal ? localtime_r : gmtime_r;
     STR_INIT(ftime, str1);
-    ONERR(str_catt(&ftime, "[ Waiting for %%2ld seconds until exactly %H:%M %Z ]",
+    ONERR(str_catt(&ftime, "[ Waiting %%2lds until exactly %H:%M:%S %Z ]",
                    time_r(&param->ts.tv_sec, &tm) ), -1);
     if (clock_gettime(CLOCK_REALTIME, &tsnow) == -1) {
         status = -1;
@@ -216,11 +202,10 @@ static void *info_thread(void *data) {
             status = -1;
             goto error;
         }
-        STR_INIT(text, str2);
-        STR_INIT(line, str3);
-        if (!ISERR(str_catf(&text, ftime.s, tsdiff(&param->ts, &tsnow) / 1000000)) &&
-            !ISERR(tpbar_setrow(&line, param->row, &param->tpbar)) &&
-            !ISERR(tpbar_printf(&line, tsdiff(&tsnow, &tslast), tsdiff(&param->ts, &tslast), &param->tpbar, text.s)) )
+        STR_INIT(line, str2);
+        if (!ISERR(tpbar_setrow(&line, param->row, &param->tpbar)) &&
+            !ISERR(tpbar_printf(&line, tsdiff(&tsnow, &tslast), tsdiff(&param->ts, &tslast),
+                                &param->tpbar, ftime.s, tsdiff(&param->ts, &tsnow) / 1000000 )) )
             write(STDOUT_FILENO, line.s, str_len(&line));
     }
     status = 0;
@@ -298,7 +283,7 @@ static int run(OPT *opt) {
     STR_INIT(line, str);
     if (!ISERR(status) &&
         !ISERR(tpbar_setrow(&line, row++, &info_param.tpbar)) &&
-        !ISERR(str_catt(&line, "Adjusted to %H:%M %Z", time_r(&info_param.ts.tv_sec, &tm))) )
+        !ISERR(str_catt(&line, "Synchronised to %H:%M:%S %Z", time_r(&info_param.ts.tv_sec, &tm))) )
         write(STDOUT_FILENO, line.s, str_len(&line));
     STR_INIT(line, str);
     if (!ISERR(powerICOM(&tty, false)) &&
@@ -320,7 +305,7 @@ error:
 static int parse_arg(int argc, char *argv[], OPT *opt) {
     int status = INT_MIN;
 
-    while (*++argv != NULL)
+    while (*++argv)
         if (!strcmp(*argv, "--help"))
             opt->usage = true;
         else if (!strcmp(*argv, "-l") || !strcmp(*argv, "--local"))

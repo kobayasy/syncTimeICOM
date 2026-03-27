@@ -1,4 +1,4 @@
-/* ttyserial.h - Last modified: 07-Feb-2026 (kobayasy)
+/* ttyserial.h - Last modified: 28-Mar-2026 (kobayasy)
  *
  * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -34,7 +34,6 @@ typedef struct {
 } TTYSerial;
 
 extern int ttyserial_new(TTYSerial *tty, int fd);
-extern int ttyserial_flush(TTYSerial *tty);
 extern void ttyserial_free(TTYSerial *tty);
 
 #endif  /* #ifndef _INCLUDE_ttyserial_h */

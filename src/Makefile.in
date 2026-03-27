@@ -1,5 +1,5 @@
 # @configure_input@
-# Makefile.in - Last modified: 07-Feb-2026 (kobayasy)
+# Makefile.in - Last modified: 28-Mar-2026 (kobayasy)
 #
 # Copyright (c) 2023-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
 #
@@ -35,6 +35,8 @@ bindir = @bindir@
 
 CC = @CC@
 CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
 DEFS = @DEFS@
 LIBS = @LIBS@
 INSTALL = @INSTALL@
@@ -52,10 +54,10 @@ ttyserial.@OBJEXT@ : ttyserial.c ttyserial.h config.h
 tpbar.@OBJEXT@ : tpbar.c tpbar.h common.h config.h
 
 $(TARGET) : $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.@OBJEXT@ : %.c
-	$(CC) $(CFLAGS) $(DEFS) -c $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c $<
 
 clean :
 	$(RM) $(TARGET)
