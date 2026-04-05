@@ -1,4 +1,4 @@
-/* syncTimeICOM.c - Last modified: 28-Mar-2026 (kobayasy)
+/* syncTimeICOM.c - Last modified: 05-Apr-2026 (kobayasy)
  *
  * Copyright (C) 2024-2026 by Yuichi Kobayashi <kobayasy@kobayasy.com>
  *
@@ -333,11 +333,11 @@ static int usage(FILE *fp) {
                 "\n"
                 "runmode\n"
 #if TZLOCAL
-                "  -u, --utc    adjust to UTC\n"
-                "  -l, --local  adjust to local time (default)\n"
+                "  -u, --utc    synchronise to UTC\n"
+                "  -l, --local  synchronise to local time (default)\n"
 #else
-                "  -u, --utc    adjust to UTC (default)\n"
-                "  -l, --local  adjust to local time\n"
+                "  -u, --utc    synchronise to UTC (default)\n"
+                "  -l, --local  synchronise to local time\n"
 #endif
                 "\n"
                 "subcommand\n"
